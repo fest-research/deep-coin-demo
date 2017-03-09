@@ -61,4 +61,4 @@ if __name__ == '__main__':
 
     # start the training
     classifier.train(train_samples=data['X_train'], train_labels=data['y_train'],
-                     batch_size=32)
+                     batch_size=32, n_epochs=300)

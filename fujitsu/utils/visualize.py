@@ -8,7 +8,7 @@ from scipy.misc import imresize, imsave
 
 
 def visualize_activations(model, test_sample, file_path, grid_shape):
-    activations = model.first_activations([test_sample])[0][0]
+    activations = model.activations(layer_index=2, samples=test_sample)[0][0]
     img_shape = activations.shape[1:]
     activations_image = create_tiles(activations, img_shape=img_shape,
                                      grid_shape=grid_shape,
@@ -18,7 +18,7 @@ def visualize_activations(model, test_sample, file_path, grid_shape):
 
 
 def visualize_separation(model, all_samples, all_labels, file_path):
-    last_activations = model.last_activations([0, all_samples])[0]
+    last_activations = model.activations(layer_index=-2, samples=all_samples)[0]
     last_activations = scale_to_unit_interval(last_activations)
     x = last_activations[:, 0]
     y = last_activations[:, 1]

@@ -29,12 +29,12 @@ class ConvnetClassifier(object):
         network = inputs
         network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
         network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
-        network = Conv2D(8, 3, 3, border_mode='valid',
+        network = Conv2D(16, 3, 3, border_mode='valid',
                          activation='relu', dim_ordering='th')(network)
         network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
         network = Dropout(p=self.dropout)(network)
 
-        network = Conv2D(8, 3, 3, border_mode='valid',
+        network = Conv2D(32, 3, 3, border_mode='valid',
                          activation='relu', dim_ordering='th')(network)
         network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
         network = Dropout(p=self.dropout)(network)
@@ -82,11 +82,10 @@ class ConvnetClassifier(object):
                                                     monitor='val_loss', save_best_only=True)
 
         # some utility functions for inspection
-        self._first_activations = K.function(inputs=self.model.inputs,
-                                             outputs=[self.model.layers[3].output])
-
-        self._last_activations = K.function(inputs=[K.learning_phase()] + self.model.inputs,
-                                            outputs=[self.model.layers[-2].output])
+        self._activation_functions = []
+        for layer in self.model.layers:
+            self._activation_functions.append(K.function(inputs=[K.learning_phase()] + self.model.inputs,
+                                                        outputs=[layer.output]))
 
     def train(self, train_samples, train_labels, n_epochs=100, batch_size=8, validation_split=0.3):
         # ensure the model directory exists
@@ -105,8 +104,8 @@ class ConvnetClassifier(object):
             width_shift_range=0.2,
             height_shift_range=0.2,
             channel_shift_range=0.2,
-            zoom_range=0.5,
-            horizontal_flip=True)
+            zoom_range=0.3,
+            horizontal_flip=False)
 
         datagen.fit(train_samples)
 
@@ -121,8 +120,5 @@ class ConvnetClassifier(object):
     def predict(self, samples, batch_size=32):
         return self.model.predict(samples, batch_size=batch_size, verbose=0)
 
-    def first_activations(self, train_samples):
-        return self._first_activations(train_samples)
-
-    def last_activations(self, train_samples):
-        return self._last_activations(train_samples)
+    def activations(self, layer_index, samples):
+        return self._activation_functions[layer_index]([0, samples])
