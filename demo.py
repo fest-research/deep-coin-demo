@@ -20,7 +20,7 @@ grid_shape = (6, 6)
 if __name__ == "__main__":
 
     # load a pretrained model
-    model = load_model('data/models/standard_convnet/weights.98-0.20-0.93.hdf5')
+    model = load_model('data/models/standard_convnet/good_0.12_0.96.hdf5')
     model.save_weights('model_weights.h5')
     classifier = ConvnetClassifier(name="standard_convnet", n_classes=n_classes,
                                    n_channels=n_channels,

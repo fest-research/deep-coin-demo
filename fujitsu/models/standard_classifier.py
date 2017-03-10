@@ -85,9 +85,10 @@ class ConvnetClassifier(object):
         self._activation_functions = []
         for layer in self.model.layers:
             self._activation_functions.append(K.function(inputs=[K.learning_phase()] + self.model.inputs,
-                                                        outputs=[layer.output]))
+                                                         outputs=[layer.output]))
 
-    def train(self, train_samples, train_labels, n_epochs=100, batch_size=8, validation_split=0.3):
+    def train(self, train_samples, train_labels,
+              n_epochs=100, batch_size=8, validation_split=0.3, class_weight=None):
         # ensure the model directory exists
         if not os.path.exists(self.model_dir):
             os.makedirs(self.model_dir)
@@ -113,6 +114,7 @@ class ConvnetClassifier(object):
         self.model.fit_generator(datagen.flow(train_samples, train_labels, batch_size=batch_size),
                                  samples_per_epoch=train_samples.shape[0],
                                  nb_epoch=n_epochs,
+                                 class_weight=class_weight,
                                  validation_data=(val_samples, val_labels),
                                  callbacks=[self.checkpoint,
                                             self.tensor_board])
