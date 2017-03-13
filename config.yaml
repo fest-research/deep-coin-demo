@@ -1,0 +1,15 @@
+---
+data:
+  n_channels: 3
+  img_width: 200
+  img_height: 200
+model:
+  name: network4_no_dropout
+  n_classes: 2
+training:
+  dropout: 0.0
+  learning_rate: 0.001
+  batch_size: 32
+  epochs: 200
+  network: network4
+

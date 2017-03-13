@@ -5,30 +5,29 @@ import os
 import _thread
 import time
 
+import yaml
 import numpy as np
 
 from fujitsu.data_management.data_loader import load_dataset
 from fujitsu.models.standard_classifier import ConvnetClassifier
+from fujitsu.networks import get_network
 from fujitsu.utils.log import setup_logger
-log = setup_logger("main")
 
-n_classes = 2
-img_width = img_height = 200
-n_channels = 3
+log = setup_logger("main")
 
 # visualization
 grid_shape = (4, 4)
 
 
 def inspect_hidden_weights(model, test_sample, all_samples, all_labels):
-    from fujitsu.utils.visualize import visualize_activations, visualize_separation, visualize_roc
+    from fujitsu.utils.visualize import visualize_separation, visualize_roc
 
     while 1:
         # visualize activations of first hidden layer
-        visualize_activations(model, test_sample, 'activations.jpg', grid_shape)
+        # visualize_activations(model, test_sample, grid_shape)
 
         # visualize data before the softmax
-        visualize_separation(model, all_samples, all_labels, 'separation.jpg')
+        visualize_separation(model, all_samples, all_labels)
 
         # create an ROC curve
         visualize_roc(model, all_samples, all_labels)
@@ -36,6 +35,10 @@ def inspect_hidden_weights(model, test_sample, all_samples, all_labels):
 
 
 if __name__ == '__main__':
+    # load the model config
+    with open('config.yaml', mode='rb') as f:
+        config = yaml.load(f)
+
     # load the data
     data, mean = load_dataset(os.path.join(os.path.dirname(__file__), "data"))
     np.save('data/data_mean.npy', mean)
@@ -43,10 +46,14 @@ if __name__ == '__main__':
     log.debug("Train data shape: {}".format(data['X_train'].shape))
 
     # initialize the model
-    classifier = ConvnetClassifier(name="standard_convnet", n_classes=n_classes,
-                                   n_channels=n_channels,
-                                   img_width=img_width, img_height=img_height,
-                                   dropout=0.5, learning_rate=0.001)
+    classifier = ConvnetClassifier(name=config['model']['name'],
+                                   network_fn=get_network(config['training']['network']),
+                                   n_classes=config['model']['n_classes'],
+                                   n_channels=config['data']['n_channels'],
+                                   img_width=config['data']['img_width'],
+                                   img_height=config['data']['img_height'],
+                                   dropout=config['training']['dropout'],
+                                   learning_rate=config['training']['learning_rate'])
 
     # continuously inspect the hidden weights in the first layer
     # a quick hack to get a positive example (with a coin in it)
@@ -60,5 +67,11 @@ if __name__ == '__main__':
         log.error("unable to start thread for hidden activation inspection")
 
     # start the training
-    classifier.train(train_samples=data['X_train'], train_labels=data['y_train'],
-                     batch_size=32, n_epochs=300)
+    classifier.train(train_samples=data['X_train'],
+                     train_labels=data['y_train'],
+                     batch_size=config['training']['batch_size'],
+                     n_epochs=config['training']['epochs'])
+
+    # save the model's config for reproducability
+    with open(os.path.join(classifier.model_dir, "config.yaml"), mode='w') as f:
+        yaml.dump(config, f)

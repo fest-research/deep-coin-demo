@@ -1,23 +1,25 @@
 """
 Module for visualizations.
 """
-
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.misc import imresize, imsave
 
 
-def visualize_activations(model, test_sample, file_path, grid_shape):
-    activations = model.activations(layer_index=3, samples=test_sample)[0][0]
+def visualize_activations(model, test_sample, grid_shape):
+    activations = model.activations(layer_index=2, samples=test_sample)[0][0]
     img_shape = activations.shape[1:]
     activations_image = create_tiles(activations, img_shape=img_shape,
                                      grid_shape=grid_shape,
                                      tile_spacing=(10, 10))
     activations_image = imresize(activations_image, size=(800, 800))
+
+    file_path = os.path.join(model.model_dir, 'activations.jpg')
     imsave(file_path, activations_image)
 
 
-def visualize_separation(model, all_samples, all_labels, file_path):
+def visualize_separation(model, all_samples, all_labels):
     last_activations = model.activations(layer_index=-2, samples=all_samples)[0]
     last_activations = scale_to_unit_interval(last_activations)
     x = last_activations[:, 0]
@@ -25,6 +27,8 @@ def visualize_separation(model, all_samples, all_labels, file_path):
 
     plt.scatter(x, y, c=all_labels[:, 1])
     plt.plot([0, 1], [0, 1], c="green")
+
+    file_path = os.path.join(model.model_dir, 'separation.jpg')
     plt.savefig(file_path)
     plt.clf()
 
@@ -38,7 +42,9 @@ def visualize_roc(model, all_samples, all_labels):
     plt.plot(fpr, tpr)
     plt.plot([0, 1], [0, 1], ls="--", label="ROC, AUC = {0:.2f}".format(auc_score))
     plt.legend()
-    plt.savefig('roc.jpg')
+
+    file_path = os.path.join(model.model_dir, 'roc.jpg')
+    plt.savefig(file_path)
     plt.clf()
 
 

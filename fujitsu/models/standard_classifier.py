@@ -7,13 +7,13 @@ from keras import callbacks
 import keras.backend as K
 
 from keras.models import Model
-from keras.layers import Input, Conv2D, MaxPooling2D, Dense, Flatten, Dropout, Activation
 from keras.optimizers import Adam
+from keras.layers import Input, Dense, Activation
 from keras.preprocessing.image import ImageDataGenerator
 
 
 class ConvnetClassifier(object):
-    def __init__(self, name, n_classes, n_channels, img_width, img_height,
+    def __init__(self, name, network_fn, n_classes, n_channels, img_width, img_height,
                  dropout=0.5, learning_rate=0.001):
         self.name = name
         self.model_dir = os.path.join(os.path.dirname(__file__),
@@ -27,39 +27,15 @@ class ConvnetClassifier(object):
         # define the symbolic variables
         inputs = Input(shape=(self.n_channels, self.img_height, self.img_width))
         network = inputs
-        network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
-        network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
-        network = Conv2D(16, 3, 3, border_mode='valid',
-                         activation='relu', dim_ordering='th')(network)
-        network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
-        network = Dropout(p=self.dropout)(network)
 
-        network = Conv2D(32, 3, 3, border_mode='valid',
-                         activation='relu', dim_ordering='th')(network)
-        network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
-        network = Dropout(p=self.dropout)(network)
+        # apply the network
+        network = network_fn(inputs, self.dropout)
 
-        # network = Conv2D(64, 3, 3, border_mode='valid',
-        # activation='relu', dim_ordering='th')(network)
-        # network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
-        # network = Dropout(p=self.dropout)(network)
-
-        # network = Conv2D(8, 3, 3, border_mode='valid',
-        # activation='relu', dim_ordering='th')(network)
-        # network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
-        # network = Dropout(p=self.dropout)(network)
-
-        # network = Conv2D(8, 3, 3, border_mode='valid',
-        # activation='relu', dim_ordering='th')(network)
-        # network = Dropout(p=self.dropout)(network)
-
-        # define the classification objective
-        network = Flatten()(network)
-        network = Dense(16, activation='relu')(network)
-        network = Dropout(p=self.dropout)(network)
+        # form the classification layers
         network = Dense(self.n_classes)(network)
         predictions = Activation(activation=K.softmax)(network)
 
+        # define the training procedure & compile model
         self.model = Model(input=inputs, output=predictions)
 
         optimizer = Adam(lr=learning_rate)
@@ -69,9 +45,8 @@ class ConvnetClassifier(object):
         self.model._make_test_function()
         self.model._make_train_function()
         self.model._make_predict_function()
-
         # callbacks (during training)
-        self.tensor_board = callbacks.TensorBoard(log_dir='./data/training_logs',
+        self.tensor_board = callbacks.TensorBoard(log_dir=os.path.join(self.model_dir, 'logs'),
                                                   histogram_freq=5,
                                                   write_graph=False,
                                                   write_images=False)
@@ -86,6 +61,9 @@ class ConvnetClassifier(object):
         for layer in self.model.layers:
             self._activation_functions.append(K.function(inputs=[K.learning_phase()] + self.model.inputs,
                                                          outputs=[layer.output]))
+
+    def get_name(self):
+        return self.name
 
     def train(self, train_samples, train_labels,
               n_epochs=100, batch_size=8, validation_split=0.3, class_weight=None):
@@ -105,8 +83,17 @@ class ConvnetClassifier(object):
             width_shift_range=0.2,
             height_shift_range=0.2,
             channel_shift_range=0.2,
+            rotation_range=180,
             zoom_range=0.3,
             horizontal_flip=False)
+
+        # datagen = ImageDataGenerator(
+        # width_shift_range=0.0,
+        # height_shift_range=0.0,
+        # channel_shift_range=0.0,
+        # rotation_range=0,
+        # zoom_range=0,
+        # horizontal_flip=False)
 
         datagen.fit(train_samples)
 
