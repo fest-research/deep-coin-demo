@@ -22,6 +22,9 @@ grid_shape = (4, 4)
 def inspect_hidden_weights(model, test_sample, all_samples, all_labels):
     from fujitsu.utils.visualize import visualize_separation, visualize_roc
 
+    # wait for tensorflow to compile the model
+    time.sleep(10)
+
     while 1:
         # visualize activations of first hidden layer
         # visualize_activations(model, test_sample, grid_shape)
