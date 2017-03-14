@@ -2,7 +2,7 @@
 Deep learning of a simple coin example.
 """
 import os
-import _thread
+import threading
 import time
 
 import yaml
@@ -61,8 +61,8 @@ if __name__ == '__main__':
     all_samples = data['X_test']
     all_labels = data['y_test']
     try:
-        _thread.start_new_thread(inspect_hidden_weights, (classifier, test_sample,
-                                                          all_samples, all_labels))
+        threading.Thread(target=inspect_hidden_weights,
+                         args=(classifier, test_sample, all_samples, all_labels)).start()
     except:
         log.error("unable to start thread for hidden activation inspection")
 
