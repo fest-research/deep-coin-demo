@@ -2,6 +2,12 @@
 ---
 This is a small demonstration of the capabilities of discriminative models in deep learning. In particular, small 200x200 pixels images are classified as "containing a 50 cent coin" or "not containing a 50 cent coin". The project is meant as a tutorial, illustrating very basic techniques in deep learning (and in particular ConvNets).
 ---
+#### Dependencies
+Check `requirements.txt`. You can install them with:
+
+```
+pip install -r requirements.txt
+```
 
 #### Model configuration
 You can configure basic hyper-parameters of the classifier in `config.yaml`. The configuration file is loaded from the file system every time `main.py` is started.
