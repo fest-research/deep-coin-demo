@@ -10,18 +10,11 @@ Check `requirements.txt` for pure python requirements. You can install them with
 pip install -r requirements.txt
 ```
 
-You need `OpenCV` and its python wrapper, with video features enabled. For a pre-compiled version, run:
+Additionally, you will need the following system dependencies:
 
 ```
-sudo apt-get install libopencv-dev python-opencv
+sudo apt-get install libopencv-dev python-opencv python-tk
 ```
-
-Also, if `tkinter` is not installed on your system, you should do so with:
-
-```
-sudo apt-get install python-tk
-```
-
 
 #### Model configuration
 You can configure basic hyper-parameters of the classifier in `config.yaml`. The configuration file is loaded from the file system every time `main.py` is started.
@@ -52,13 +45,14 @@ In order to train the model, attention should be paid to the structure of the `d
 * `data/negative` should contain 200x200 images that have no coin in them. For this, you must extract `negative.tar.gz`.
 * `data/models` will contain the results of all trained models; you do not need to create this directory manually
 
-Additionally, you can generate new data samples from a camera video feed using this script:
+Additionally, you can generate new data samples from a live camera video feed using this script:
 
 ```
 python -m fujitsu.data_management.data_generator
 ```
 
-Note that all images will be stored in `data`, and then you need to manually sort them into `data/positive` or `data/negative`, depending on whether they contain a coin (positive) or not.
+Frames from the video will be saved every second and stored in `data`, and then you need to manually sort them into `data/positive` or `data/negative`, depending on whether they contain a coin (positive) or not.
+
 #### Training
 To start training the model, run:
 
