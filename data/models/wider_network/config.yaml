@@ -1,0 +1,15 @@
+---
+data:
+  img_height: 200
+  img_width: 200
+  n_channels: 3
+model:
+  n_classes: 2
+  name: wider_network
+training:
+  batch_size: 32
+  dropout: 0.0
+  epochs: 200
+  learning_rate: 0.001
+  network: wider_network
+
