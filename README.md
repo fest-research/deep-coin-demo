@@ -77,6 +77,8 @@ A live feed from the camera will be processed frame by frame by the selected cla
 [TensorBoard](https://www.tensorflow.org/get_started/summaries_and_tensorboard) is a small utility that comes with `TensorFlow` and it will help you inspect your training progress and evaluate the quality of different models. 
 To start `tensorboard`, you need to point it to a folder which contains the training logs of a model.
 
+Once started, you can access it on (default) `http://localhost:6006`.
+
 To visualize only one model (experiment), run:
 
 ```
