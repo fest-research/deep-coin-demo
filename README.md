@@ -45,6 +45,20 @@ training:
 
 In the example above, `model.name` is important - this is the ID of the experiment you are running. During training, a folder for this model will be created: `data/folder/<model_name>`, where all training results and artifacts (such as the `weights*.hdf5` files) will be stored.
 
+#### Data management
+In order to train the model, attention should be paid to the structure of the `data` folder:
+
+* `data/positive` should contain 200x200 images with a coin in them. For this, you must extract `positive.tar.gz`.
+* `data/negative` should contain 200x200 images that have no coin in them. For this, you must extract `negative.tar.gz`.
+* `data/models` will contain the results of all trained models; you do not need to create this directory manually
+
+Additionally, you can generate new data samples from a camera video feed using this script:
+
+```
+python -m fujitsu.data_management.data_generator
+```
+
+Note that all images will be stored in `data`, and then you need to manually sort them into `data/positive` or `data/negative`, depending on whether they contain a coin (positive) or not.
 #### Training
 To start training the model, run:
 
@@ -64,20 +78,6 @@ python demo.py --modeldir=./data/models/<model_name> --weights=<weights_filename
 You can find the name of the weights file you want by inspecting the contents of `data/models/<model_name>`. An example is `weights.255-0.02-0.99.hdf5`. Here 255 is the training epoch (iteration) when the weights were persisted, 0.02 is the validation loss value at that point (the lower, the better) and 0.99 is the validation accuracy (the bigger, the better).
 A live feed from the camera will be processed frame by frame by the selected classifier and the frames will be classified as either "containing a coin" or "not containing a coin" on the fly.
 
-#### Data management
-In order to train the model, attention should be paid to the structure of the `data` folder:
-
-* `data/positive` should contain 200x200 images with a coin in them. For this, you can extract `positive.tar.gz`.
-* `data/negative` should contain 200x200 images that have no coin in them. For this, you can extract `negative.tar.gz`.
-* `data/models` will contain the results of all trained models; you do not need to create this directory manually
-
-Additionally, you can generate new data samples from a camera video feed using this script:
-
-```
-python -m fujitsu.data_management.data_generator
-```
-
-Note that all images will be stored in `data`, and then you need to manually sort them into `data/positive` or `data/negative`, depending on whether they contain a coin (positive) or not.
 
 ### Visualizing learning with TensorBoard
 [TensorBoard](https://www.tensorflow.org/get_started/summaries_and_tensorboard) is a small utility that comes with `TensorFlow` and it will help you inspect your training progress and evaluate the quality of different models. 
