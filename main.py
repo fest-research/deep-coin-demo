@@ -74,4 +74,4 @@ if __name__ == '__main__':
 
     # save the model's config for reproducability
     with open(os.path.join(classifier.model_dir, "config.yaml"), mode='w') as f:
-        yaml.dump(config, f)
+        yaml.dump(config, f, default_flow_style=False)

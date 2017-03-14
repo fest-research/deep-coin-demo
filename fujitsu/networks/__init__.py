@@ -1,4 +1,4 @@
-from fujitsu.networks.convnets import network1, network0, network2, network3, network4, wider_network
+from fujitsu.networks.convnets import network1, network0, network2, network3, network4, wider_network, deeper_network
 
 
 _networks = {
@@ -8,6 +8,7 @@ _networks = {
     'network3': network3,
     'network4': network4,
     'wider_network': wider_network,
+    'deeper_network': deeper_network,
 }
 
 

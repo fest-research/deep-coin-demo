@@ -1,5 +1,5 @@
 import keras.backend as K
-from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, Activation
+from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, Activation, GlobalMaxPooling2D
 
 
 def network0(inputs, dropout):
@@ -97,6 +97,7 @@ def network4(inputs, dropout):
 
     return network
 
+
 def wider_network(inputs, dropout):
     network = inputs
 
@@ -122,5 +123,37 @@ def wider_network(inputs, dropout):
     network = Dense(64)(network)
     network = Activation(K.relu)(network)
     network = Dropout(p=dropout)(network)
+
+    return network
+
+
+def deeper_network(inputs, dropout):
+    network = inputs
+
+    network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
+    network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
+
+    network = Conv2D(16, 3, 3, border_mode='valid', dim_ordering='th')(network)
+    network = Activation(activation=K.relu)(network)
+    network = Conv2D(16, 3, 3, border_mode='valid', dim_ordering='th')(network)
+    network = Activation(activation=K.relu)(network)
+    network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
+    network = Dropout(p=dropout)(network)
+
+    network = Conv2D(32, 3, 3, border_mode='valid', dim_ordering='th')(network)
+    network = Activation(activation=K.relu)(network)
+    network = Conv2D(32, 3, 3, border_mode='valid', dim_ordering='th')(network)
+    network = Activation(activation=K.relu)(network)
+    network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
+    network = Dropout(p=dropout)(network)
+
+    network = Conv2D(64, 3, 3, border_mode='valid', dim_ordering='th')(network)
+    network = Activation(activation=K.relu)(network)
+    network = Conv2D(64, 3, 3, border_mode='valid', dim_ordering='th')(network)
+    network = Activation(activation=K.relu)(network)
+    network = MaxPooling2D(pool_size=(2, 2), border_mode='valid', dim_ordering='th')(network)
+    network = Dropout(p=dropout)(network)
+
+    network = GlobalMaxPooling2D(dim_ordering='th')(network)
 
     return network

@@ -17,7 +17,7 @@ python main.py
 A small online demo was created to show the pre-trained classifier in action. A camera needs to be connected to your machine. Run:
 
 ```
-python demo.py
+python demo.py --modeldir=./data/models/<model_name> --weights=<weights_filename>.hdf5
 ```
 
 A live feed from the camera will be processed frame by frame by che selected classifier and the frames will be classified as either "containing a coint" or "not containing a coin" on the fly.
