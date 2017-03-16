@@ -8,3 +8,4 @@ gevent==1.2.1
 h5py==2.6.0
 tensorflow==1.0.0
 pillow==4.0.0
+click==6.7
