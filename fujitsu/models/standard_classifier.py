@@ -15,6 +15,19 @@ from keras.preprocessing.image import ImageDataGenerator
 class ConvnetClassifier(object):
     def __init__(self, name, network_fn, n_classes, n_channels, img_width, img_height,
                  dropout=0.5, learning_rate=0.001):
+        """__init__
+
+        :param name: model name, will be used as a model ID to create the model directory
+        :param network_fn: function of the neural network structure:
+            Usage: output_layer = network_fn(input_layer, dropout)
+        :param n_classes: how many classes do we want to distinguish from the data
+        :param n_channels: channels in the images, the model uses the "channels_first" convention
+            batch_inputs_shape = (batch_size, n_channels, height, width)
+        :param img_width: width of the processed images
+        :param img_height: height of the processed images
+        :param dropout: dropout parameter, passed to the network_fn
+        :param learning_rate: desired learning rate for the gradient decent optimization
+        """
         self.name = name
         self.model_dir = os.path.join(os.path.dirname(__file__),
                                       "../../data/models/{}".format(self.name))
@@ -71,6 +84,16 @@ class ConvnetClassifier(object):
 
     def train(self, train_samples, train_labels,
               n_epochs=100, batch_size=8, validation_split=0.3, class_weight=None):
+        """train
+
+        :param train_samples: shape (N, n_channels, img_height, img_width)
+        :param train_labels: shape (N, )
+        :param n_epochs: for how many epochs to train
+        :param batch_size: desired size of the mini-batches
+        :param validation_split: percentage of the train data to use for validation
+        :param class_weight: (optional) dictionary of weights for the different classes,
+            (e.g. if the classification of one is more important)
+        """
         # ensure the model directory exists
         if not os.path.exists(self.model_dir):
             os.makedirs(self.model_dir)
@@ -112,7 +135,20 @@ class ConvnetClassifier(object):
                                             self.tensor_board])
 
     def predict(self, samples, batch_size=32):
+        """predict
+
+        :param samples: images to predict for, shape (N, n_channels, img_height, img_width)
+        :param batch_size: mini-batch size to use during prediction
+        :returns: the predictions (classification scores)
+        """
         return self.model.predict(samples, batch_size=batch_size, verbose=0)
 
     def activations(self, layer_index, samples):
+        """
+        activations - get the output of any hidden layer in the network
+
+        :param layer_index: which layer's output ( 0-based index)
+        :param samples: image samples for which the hidden outputs should be produced
+        :returns: the hidden outputs
+        """
         return self._activation_functions[layer_index]([0, samples])
