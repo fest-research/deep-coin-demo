@@ -26,9 +26,6 @@ def inspect_hidden_weights(model, test_sample, all_samples, all_labels):
     time.sleep(10)
 
     while 1:
-        # visualize activations of first hidden layer
-        # visualize_activations(model, test_sample, grid_shape)
-
         # visualize data before the softmax
         visualize_separation(model, all_samples, all_labels)
 
@@ -58,8 +55,8 @@ if __name__ == '__main__':
                                    dropout=config['training']['dropout'],
                                    learning_rate=config['training']['learning_rate'])
 
-    # continuously inspect the hidden weights in the first layer
-    # a quick hack to get a positive example (with a coin in it)
+    # continuously inspect the performance by plotting ROC curves and
+    # separations
     test_sample = data['X_test'][[np.argmax(data['y_test'][:, 1])]]
     all_samples = data['X_test']
     all_labels = data['y_test']

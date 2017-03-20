@@ -35,9 +35,10 @@ class ConvnetClassifier(object):
         network = Dense(self.n_classes)(network)
         predictions = Activation(activation=K.softmax)(network)
 
-        # define the training procedure & compile model
+        # Define the model
         self.model = Model(input=inputs, output=predictions)
 
+        # define the gradient descent optimization
         optimizer = Adam(lr=learning_rate)
         self.model.compile(optimizer=optimizer,
                            loss='categorical_crossentropy',
@@ -45,12 +46,15 @@ class ConvnetClassifier(object):
         self.model._make_test_function()
         self.model._make_train_function()
         self.model._make_predict_function()
-        # callbacks (during training)
+
+        # callbacks (add-ons during training)
+        # visualizations
         self.tensor_board = callbacks.TensorBoard(log_dir=os.path.join(self.model_dir, 'logs'),
                                                   histogram_freq=5,
                                                   write_graph=False,
                                                   write_images=False)
 
+        # weight checkpointing
         checkpoint_path = os.path.join(self.model_dir,
                                        "weights.{epoch:02d}-{val_loss:.2f}-{val_acc:.2f}.hdf5")
         self.checkpoint = callbacks.ModelCheckpoint(filepath=checkpoint_path,
@@ -78,22 +82,23 @@ class ConvnetClassifier(object):
         train_samples = train_samples[val_size:]
         train_labels = train_labels[val_size:]
 
-        # dynamic data augmentation
-        datagen = ImageDataGenerator(
-            width_shift_range=0.2,
-            height_shift_range=0.2,
-            channel_shift_range=0.2,
-            rotation_range=180,
-            zoom_range=0.3,
-            horizontal_flip=False)
+        # dynamic data augmentation & minibatch feeding
 
         # datagen = ImageDataGenerator(
-        # width_shift_range=0.0,
-        # height_shift_range=0.0,
-        # channel_shift_range=0.0,
-        # rotation_range=0,
-        # zoom_range=0,
+        # width_shift_range=0.2,
+        # height_shift_range=0.2,
+        # channel_shift_range=0.2,
+        # rotation_range=180,
+        # zoom_range=0.3,
         # horizontal_flip=False)
+
+        datagen = ImageDataGenerator(
+            width_shift_range=0.0,
+            height_shift_range=0.0,
+            channel_shift_range=0.0,
+            rotation_range=0,
+            zoom_range=0,
+            horizontal_flip=False)
 
         datagen.fit(train_samples)
 
