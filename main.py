@@ -66,12 +66,19 @@ if __name__ == '__main__':
     except:
         log.error("unable to start thread for hidden activation inspection")
 
-    # start the training
-    classifier.train(train_samples=data['X_train'],
-                     train_labels=data['y_train'],
-                     batch_size=config['training']['batch_size'],
-                     n_epochs=config['training']['epochs'])
+    try:
+        # start the training
+        classifier.train(train_samples=data['X_train'],
+                         train_labels=data['y_train'],
+                         batch_size=config['training']['batch_size'],
+                         n_epochs=config['training']['epochs'])
 
-    # save the model's config for reproducability
-    with open(os.path.join(classifier.model_dir, "config.yaml"), mode='w') as f:
-        yaml.dump(config, f, default_flow_style=False)
+    except KeyboardInterrupt:
+        log.info("Training has been interrupted.")
+    finally:
+        log.info(
+            "Training has finished. "
+            "You can find the model weights under data/models/{}".format(config['model']['name']))
+        # save the model's config for reproducability
+        with open(os.path.join(classifier.model_dir, "config.yaml"), mode='w') as f:
+            yaml.dump(config, f, default_flow_style=False)
