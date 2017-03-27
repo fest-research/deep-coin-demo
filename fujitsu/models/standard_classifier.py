@@ -107,21 +107,21 @@ class ConvnetClassifier(object):
 
         # dynamic data augmentation & minibatch feeding
 
-        # datagen = ImageDataGenerator(
-        # width_shift_range=0.2,
-        # height_shift_range=0.2,
-        # channel_shift_range=0.2,
-        # rotation_range=180,
-        # zoom_range=0.3,
-        # horizontal_flip=False)
-
         datagen = ImageDataGenerator(
-            width_shift_range=0.0,
-            height_shift_range=0.0,
-            channel_shift_range=0.0,
-            rotation_range=0,
-            zoom_range=0,
+            width_shift_range=0.2,
+            height_shift_range=0.2,
+            channel_shift_range=0.2,
+            rotation_range=180,
+            zoom_range=0.3,
             horizontal_flip=False)
+
+        # datagen = ImageDataGenerator(
+        # width_shift_range=0.0,
+        # height_shift_range=0.0,
+        # channel_shift_range=0.0,
+        # rotation_range=0,
+        # zoom_range=0,
+        # horizontal_flip=False)
 
         datagen.fit(train_samples)
 

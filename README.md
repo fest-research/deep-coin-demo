@@ -7,13 +7,24 @@ This is a small demonstration of the capabilities of discriminative models in de
 Check `requirements.txt` for pure python requirements. You can install them with:
 
 ```
-pip install -r requirements.txt
+sudo pip install -r requirements.txt
 ```
 
 Additionally, you will need the following system dependencies:
 
 ```
 sudo apt-get install libopencv-dev python-opencv python-tk
+```
+
+After installing the python dependencies, copy the following into the file `~/.keras/keras.json` (create it if it does not exist):
+
+```json
+{
+    "floatx": "float32",
+    "image_dim_ordering": "th",
+    "epsilon": 1e-07,
+    "backend": "tensorflow"
+}
 ```
 
 #### Model configuration
@@ -36,14 +47,14 @@ training:
   network: wider_network
 ```
 
-In the example above, `model.name` is important - this is the ID of the experiment you are running. During training, a folder for this model will be created: `data/folder/<model_name>`, where all training results and artifacts (such as the `weights*.hdf5` files) will be stored.
+In the example above, `model.name` is important - this is the ID of the experiment you are running. During training, a folder for this model will be created: `data/models/<model_name>`, where all training results and artifacts (such as the `weights*.hdf5` files) will be stored.
 
 #### Data management
 In order to train the model, attention should be paid to the structure of the `data` folder:
 
 * `data/positive` should contain 200x200 images with a coin in them. For this, you must extract `positive.tar.gz`.
 * `data/negative` should contain 200x200 images that have no coin in them. For this, you must extract `negative.tar.gz`.
-* `data/models` will contain the results of all trained models; you do not need to create this directory manually
+* `data/models` will contain the results of all trained models; you do not need to create this directory manually.
 
 Additionally, you can generate new data samples from a live camera video feed using this script:
 
@@ -61,17 +72,6 @@ python main.py
 ```
 
 The training will start and all results will be stored in the model's directory, determined based on the `config.yaml` as described above. As the training progresses, the model weights will be checkpointed every time a new best is reached.
-
-#### Testing
-A small online demo was created to show the pre-trained classifier in action. A camera needs to be connected to your machine. Run:
-
-```
-python demo.py --modeldir=./data/models/<model_name> --weights=<weights_filename>.hdf5
-```
-
-You can find the name of the weights file you want by inspecting the contents of `data/models/<model_name>`. An example is `weights.255-0.02-0.99.hdf5`. Here 255 is the training epoch (iteration) when the weights were persisted, 0.02 is the validation loss value at that point (the lower, the better) and 0.99 is the validation accuracy (the bigger, the better).
-A live feed from the camera will be processed frame by frame by the selected classifier and the frames will be classified as either "containing a coin" or "not containing a coin" on the fly.
-
 
 ### Visualizing learning with TensorBoard
 [TensorBoard](https://www.tensorflow.org/get_started/summaries_and_tensorboard) is a small utility that comes with `TensorFlow` and it will help you inspect your training progress and evaluate the quality of different models. 
@@ -92,3 +92,25 @@ tensorboard --logdir=data/models
 ```
 
 The second command will automatically pick up the training logs of all models that are to be found under `data/models`.
+
+#### Testing
+A small online demo was created to show the pre-trained classifier in action. A camera needs to be connected to your machine. Run:
+
+```
+python demo.py --modeldir=./data/models/<model_name> --weights=<weights_filename>.hdf5
+```
+
+You can find the name of the weights file you want by inspecting the contents of `data/models/<model_name>`. An example is `weights.255-0.02-0.99.hdf5`. Here 255 is the training epoch (iteration) when the weights were persisted, 0.02 is the validation loss value at that point (the lower, the better) and 0.99 is the validation accuracy (the bigger, the better).
+A live feed from the camera will be processed frame by frame by the selected classifier and the frames will be classified as either "containing a coin" or "not containing a coin" on the fly.
+
+#### Raspberry Pi
+
+If you want to try out the project on a RPI device, follow [this guide](https://github.com/fest-research/deep-coin-demo/blob/master/doc/rpi.md).
+
+#### Delving deeper
+
+The following are good starting points for machine learning beginners:
+
+* [Intro to deep learning (presentation)](https://github.com/fest-research/deep-coin-demo/blob/master/doc/presentation.pptx)
+* [A list of introductory videos](https://github.com/fest-research/deep-coin-demo/blob/master/doc/videos_list.md)
+* [Tensorflow introduction, logistic regression (python notebook)](https://github.com/fest-research/deep-coin-demo/blob/master/intro/tensorflow_intro.ipynb)

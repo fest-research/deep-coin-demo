@@ -15,6 +15,7 @@ from scipy.misc import imresize
 log = setup_logger("demo")
 grid_shape = (6, 6)
 
+
 @click.command()
 @click.option('--modeldir', prompt='Enter path to the directory of the model to demo',
               help='path to the directory of the model you want to demo with')
@@ -39,6 +40,7 @@ def run_demo(modeldir, weights):
                                    learning_rate=config['training']['learning_rate'])
     classifier.model.load_weights('model_weights.h5')
     data, data_mean = load_dataset(os.path.join(os.path.dirname(__file__), "data"))
+    np.save("data_mean.npy", data_mean)
 
     # test on the test set
     result = model.evaluate(data['X_test'], data['y_test'])
@@ -90,14 +92,14 @@ def run_demo(modeldir, weights):
                 cv2.imshow('video', frame)
 
                 # visualize a filter
-                # for i in [3, 6]:
-                # activations = classifier.activations(i, input_frame)[0][0]
-                # img_shape = activations.shape[1:]
-                # activations_image = create_tiles(activations, img_shape=img_shape,
-                # grid_shape=grid_shape,
-                # tile_spacing=(10, 10))
-                # activations_image = imresize(activations_image, size=(800, 800))
-                # cv2.imshow('filters{}'.format(i), activations_image)
+                for i in [3, 6]:
+                    activations = classifier.activations(i, input_frame)[0][0]
+                    img_shape = activations.shape[1:]
+                    activations_image = create_tiles(activations, img_shape=img_shape,
+                                                     grid_shape=grid_shape,
+                                                     tile_spacing=(10, 10))
+                    activations_image = imresize(activations_image, size=(800, 800))
+                    cv2.imshow('filters{}'.format(i), activations_image)
 
                 i += 1
                 counter = 0
@@ -105,7 +107,7 @@ def run_demo(modeldir, weights):
         if cv2.waitKey(10) == 27:
             break
 
+
 if __name__ == "__main__":
     # get the command line parameters
     run_demo()
-
