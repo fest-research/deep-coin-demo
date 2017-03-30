@@ -1,0 +1,38 @@
+apiVersion: "fujitsu.com/v1"
+kind: IotDaemonSet
+metadata:
+  name: iot-deep-app
+  namespace: default
+  labels:
+    deviceSelector: "all"
+spec:
+  template:
+    metadata:
+      labels:
+        app: iot-deep-app
+        name: iot-deep-app
+    spec:
+      hostNetwork: true
+      containers:
+        - name: iot-deep-app
+          securityContext:
+            privileged: true
+          image: fest/deep-rpi
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /sys/class/gpio
+              name:      sys-class-gpio
+            - mountPath: /sys/devices
+              name:      sys-devices
+            - mountPath: /sys/bus
+              name:      sys-bus
+      volumes:
+        - name:     sys-class-gpio
+          hostPath:
+            path:   /sys/class/gpio
+        - name:     sys-devices
+          hostPath:
+            path:   /sys/devices
+        - name:     sys-bus
+          hostPath:
+            path:   /sys/bus

@@ -14,10 +14,10 @@ RUN apt-get update && apt-get install -y \
 	build-essential
 
 # Install userland
-RUN git clone --depth 1 https://github.com/raspberrypi/userland.git /home/deep/userland
-RUN cd /home/deep/userland && /home/deep/userland/buildme
-ENV LD_LIBRARY_PATH="/opt/vc/lib"
+RUN git clone --depth 1 https://github.com/raspberrypi/userland.git /deep/userland
+RUN cd /deep/userland && /deep/userland/buildme
 RUN ldconfig
+ENV LD_LIBRARY_PATH="/opt/vc/lib"
 
 # install pygame (for camera interactions)
 RUN apt-get install -y python-pygame
@@ -26,18 +26,15 @@ RUN apt-get install -y python-pygame
 RUN pip install pyyaml
 
 # Manually install keras
-RUN mkdir -p /home/deep/.keras
-COPY keras.json /home/deep/.keras/keras.json
-RUN git clone https://github.com/fchollet/keras.git /home/deep/keras
-RUN cd /home/deep/keras && git checkout 1.2.2
-RUN cp -R /home/deep/keras/keras /usr/local/lib/python2.7/dist-packages
+RUN mkdir -p /root/.keras
+COPY keras.json /root/.keras/keras.json
+RUN git clone https://github.com/fchollet/keras.git /deep/keras
+RUN cd /deep/keras && git checkout 1.2.2
+RUN cp -R /deep/keras/keras /usr/local/lib/python2.7/dist-packages
 
 
-COPY best_model.hdf5 /home/deep/best_model.hdf5
-COPY voice.mp3 /home/deep/voice.mp3
-COPY demo_rpi.py /home/deep/demo_rpi.py
+COPY best_model.hdf5 /deep/best_model.hdf5
+COPY voice.mp3 /deep/voice.mp3
+COPY demo_rpi.py /deep/demo_rpi.py
+COPY data_mean.npy /deep/data_mean.npy
 
-# RUN useradd -ms /bin/bash deep
-# RUN adduser deep sudo
-# RUN echo deep:deep | chpasswd
-# USER deep

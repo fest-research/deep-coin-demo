@@ -9,14 +9,14 @@ The easiest way to run the demo on a RPI is in a container. You can use Docker o
 You can use a pre-built container and run it on your raspberry with:
 
 ```
-docker run --device /dev/video0 -v /dev:/dev:rw -v /sys/class/gpio:/sys/class/gpio:rw  -v /sys/bus:/sys/bus:rw --privileged -d taimir93/rpi-tensorflow python /notebooks/deep/coin_recognition/demo_rpi.py
+docker run --device /dev/video0 -v /dev:/dev:rw -v /sys/class/gpio:/sys/class/gpio:rw  -v /sys/bus:/sys/bus:rw --privileged -d fest/deep-rpi python /deep/demo_rpi.py
 ```
 
 #### Kubernetes
 You can also deploy the small demo in a k8s cluster:
 
 ```
-kubectl apply -f demo_rpi.yaml
+kubectl apply -f assets/demo_rpi.yaml
 ```
 
 ### How to build
